@@ -33,7 +33,10 @@ export class ApiErrorFilter implements ExceptionFilter {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const response = exception.getResponse() as any;
 
-      const body: ApiErrorBody = {
+      const body = {
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: req.url,
         error: {
           code: status === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
