@@ -5,8 +5,11 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Put,
+  UsePipes,
 } from '@nestjs/common';
 import { CreateCatDto, UpdateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
@@ -28,7 +31,7 @@ export class CatsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<string> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<string> {
     console.log(id);
     return Promise.resolve(`This action returns a #${id} cat`);
   }

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { CatsModule } from './modules/cats/cats.module';
 import { LoggerMiddleware } from './common/logging/logger.middleware';
