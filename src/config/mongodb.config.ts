@@ -1,19 +1,18 @@
-// config/cron.config.ts
 import { registerAs } from '@nestjs/config';
 import { Environment } from './validation.config';
 
-const byEnv: Record<Environment, { level: string }> = {
+const byEnv: Record<Environment, { uri: string }> = {
   dev: {
-    level: 'debug',
+    uri: `mongodb://localhost:27017/event-room-test`,
   },
   test: {
-    level: 'debug',
+    uri: 'mongodb://localhost:27017/event-room-test',
   },
   uat: {
-    level: 'debug',
+    uri: 'mongodb://localhost:27017/event-room-test',
   },
   prod: {
-    level: 'debug',
+    uri: 'mongodb://localhost:27017/event-room-test',
   },
 };
 

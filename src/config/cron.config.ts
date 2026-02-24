@@ -1,6 +1,6 @@
 // config/cron.config.ts
 import { registerAs } from '@nestjs/config';
-import { Environment } from './config.validation';
+import { Environment } from './validation.config';
 
 const byEnv: Record<Environment, { jobs: Record<string, string> }> = {
   dev: {

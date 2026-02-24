@@ -1,8 +1,7 @@
 import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-import * as Joi from 'joi';
-import { CatsModule } from './modules/cats/cats.module';
+import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerMiddleware } from './common/logging/logger.middleware';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
@@ -11,20 +10,27 @@ import { ApiErrorFilter } from './common/errors/api-exception.filter';
 import configuration from './config/configuration';
 import cronConfig from './config/cron.config';
 import logLevelConfig from './config/log-level.config';
-import { Environment, validate } from './config/config.validation';
+import mongoDbConfig from './config/mongodb.config';
+import { Environment, validate } from './config/validation.config';
+import { MongodbConfigService } from './database/mongodb.config.service';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
-    // keep HttpModule global usage minimal; we wrap it in our own HttpClientModule too
-    HttpModule,
-    CatsModule,
     ConfigModule.forRoot({
       validate,
       envFilePath: ['.env', `.env.${process.env.APP_ENV ?? Environment.Dev}`],
-      load: [configuration, cronConfig, logLevelConfig],
+      load: [configuration, cronConfig, logLevelConfig, mongoDbConfig],
       isGlobal: true,
       cache: true,
+      expandVariables: true,
     }),
+    MongooseModule.forRootAsync({
+      useClass: MongodbConfigService,
+    }),
+    // keep HttpModule global usage minimal; we wrap it in our own HttpClientModule too
+    HttpModule,
+    UserModule,
   ],
   providers: [
     {

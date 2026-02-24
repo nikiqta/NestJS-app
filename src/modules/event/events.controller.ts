@@ -5,29 +5,28 @@ import {
   Get,
   HttpCode,
   Param,
-  ParseIntPipe,
   ParseUUIDPipe,
   Post,
   Put,
-  UsePipes,
 } from '@nestjs/common';
-import { CreateCatDto, UpdateCatDto } from './dto/create-cat.dto';
-import { CatsService } from './cats.service';
-import { Cat } from './interfaces/cat.interface';
+import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { EventsService } from './events.service';
+import { Event } from 'src/schemas/event.schema';
 
 @Controller('cats')
-export class CatsController {
-  constructor(private catsService: CatsService) {}
+export class EventsController {
+  constructor(private eventsService: EventsService) {}
 
   @Post()
   @HttpCode(200)
-  create(@Body() createCatDto: CreateCatDto) {
-    this.catsService.create(createCatDto);
+  create(@Body() createEventDto: CreateEventDto) {
+    // this.eventsService.create(createEventDto);
   }
 
   @Get()
-  async findAll(): Promise<Cat[]> {
-    return await this.catsService.findAll();
+  async findAll(): Promise<Event[]> {
+    return await this.eventsService.findAll();
   }
 
   @Get(':id')
@@ -37,7 +36,7 @@ export class CatsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+  update(@Param('id') id: string, @Body() updateCatDto: UpdateEventDto) {
     console.log(id);
     console.log(updateCatDto);
     return `This action updates a #${id} cat`;
