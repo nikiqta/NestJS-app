@@ -16,7 +16,7 @@ const byEnv: Record<Environment, { uri: string }> = {
   },
 };
 
-export default registerAs('logLevel', () => {
+export default registerAs('mongoDB', () => {
   const env = (process.env.APP_ENV ?? Environment.Dev) as Environment;
   return byEnv[env] ?? byEnv.dev;
 });

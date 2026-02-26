@@ -7,7 +7,6 @@ export class EventsService implements OnModuleInit {
 
   async onModuleInit() {
     // Simulate async initialization logic
-    console.log('CatsService initialized');
   }
 
   create(event: Event) {

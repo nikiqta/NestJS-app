@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { HydratedDocument, Model, Schema as MongooseSchema } from 'mongoose';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -49,16 +49,6 @@ export class User {
     },
   })
   fullName: string;
-
-  // ✅ instance method
-  async authenticate(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.hashedPassword);
-  }
-
-  // ✅ instance method (optional but recommended)
-  async setPassword(password: string): Promise<void> {
-    this.hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-  }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

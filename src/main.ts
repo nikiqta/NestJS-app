@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { levelToNestLevels } from './common/log/log-levels';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,7 +13,19 @@ async function bootstrap() {
     level: 'debug',
   });
 
-  app.useGlobalPipes(new ValidationPipe());
+  // Enable CORS
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || ['http://localhost:3000'], // Allow only this origin
+    credentials: true, // Allow cookies to be sent
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // enables class-transformer
+      whitelist: true, // strips properties not in DTO
+      forbidNonWhitelisted: true, // throws error on extra props
+    }),
+  );
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Insurance BFF API')
@@ -28,6 +41,7 @@ async function bootstrap() {
 
   app.useLogger(levelToNestLevels[logLevel.level] ?? ['log', 'warn', 'error']);
 
+  app.use(cookieParser());
   await app.listen(configService.get('port', 3000));
   console.log(`Application is running on port: ${configService.get('port')}`);
 }

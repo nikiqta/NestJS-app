@@ -13,14 +13,21 @@ import logLevelConfig from './config/log-level.config';
 import mongoDbConfig from './config/mongodb.config';
 import { Environment, validate } from './config/validation.config';
 import { MongodbConfigService } from './database/mongodb.config.service';
-import { UserModule } from './modules/user/user.module';
+import sessionConfig from './config/jwt.config';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       validate,
       envFilePath: ['.env', `.env.${process.env.APP_ENV ?? Environment.Dev}`],
-      load: [configuration, cronConfig, logLevelConfig, mongoDbConfig],
+      load: [
+        configuration,
+        cronConfig,
+        logLevelConfig,
+        mongoDbConfig,
+        sessionConfig,
+      ],
       isGlobal: true,
       cache: true,
       expandVariables: true,
@@ -30,7 +37,7 @@ import { UserModule } from './modules/user/user.module';
     }),
     // keep HttpModule global usage minimal; we wrap it in our own HttpClientModule too
     HttpModule,
-    UserModule,
+    AuthModule,
   ],
   providers: [
     {
