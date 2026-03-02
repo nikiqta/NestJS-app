@@ -6,7 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/schemas/user.schema';
 import { Session } from 'src/schemas/session.schema';
-import { getCookies } from './helpers';
+import { getCookies } from '../../helpers';
 import { UserService } from '../user/user.service';
 
 @Injectable()
@@ -19,6 +19,11 @@ export class AuthService {
     private configService: ConfigService,
     @InjectModel(Session.name) private sessionModel: Model<Session>,
   ) {}
+
+  async onModuleInit() {
+    console.log('Auth Module initialized');
+    // Simulate async initialization logic
+  }
 
   async login(user, req, res) {
     try {

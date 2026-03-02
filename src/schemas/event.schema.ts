@@ -5,38 +5,43 @@ export type EventDocument = HydratedDocument<Event>;
 
 @Schema()
 export class Event {
-  @Prop()
-  name: MongooseSchema.Types.String;
+  @Prop({ type: MongooseSchema.Types.String, required: true, unique: true })
+  name;
 
-  @Prop()
-  status: MongooseSchema.Types.String;
+  @Prop({ type: MongooseSchema.Types.String, default: 'Waiting For Approval' })
+  status;
 
-  @Prop()
-  creator: MongooseSchema.Types.ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId, required: true, ref: 'User' })
+  creator;
 
-  @Prop()
-  creationDate: MongooseSchema.Types.Date;
+  @Prop({ type: MongooseSchema.Types.Date, default: Date.now })
+  creationDate;
 
-  @Prop()
-  eventDate: MongooseSchema.Types.Date;
+  @Prop({ type: MongooseSchema.Types.Date, required: true })
+  eventDate;
 
-  @Prop()
-  ticketPrice: MongooseSchema.Types.Number;
+  @Prop({ type: MongooseSchema.Types.Number, required: true })
+  ticketPrice;
 
-  @Prop()
-  availableSeats: MongooseSchema.Types.Number;
+  @Prop({
+    type: MongooseSchema.Types.Number,
+    required: true,
+    minLength: 10,
+    maxLength: 100,
+  })
+  availableSeats;
 
-  @Prop()
-  reservedSeats: MongooseSchema.Types.String;
+  @Prop([{ type: MongooseSchema.Types.String }])
+  reservedSeats;
 
-  @Prop()
-  description: MongooseSchema.Types.ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId })
+  description;
 
-  @Prop()
-  participants: MongooseSchema.Types.ObjectId;
+  @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'User' }])
+  participants;
 
-  @Prop()
-  imageUrl: MongooseSchema.Types.String;
+  @Prop({ type: MongooseSchema.Types.String, required: false })
+  imageUrl;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

@@ -15,6 +15,9 @@ import { Environment, validate } from './config/validation.config';
 import { MongodbConfigService } from './database/mongodb.config.service';
 import sessionConfig from './config/jwt.config';
 import { AuthModule } from './modules/auth/auth.module';
+import { EventsModule } from './modules/events/events.module';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -38,6 +41,9 @@ import { AuthModule } from './modules/auth/auth.module';
     // keep HttpModule global usage minimal; we wrap it in our own HttpClientModule too
     HttpModule,
     AuthModule,
+    EventsModule,
+    TicketModule,
+    CommentModule,
   ],
   providers: [
     {

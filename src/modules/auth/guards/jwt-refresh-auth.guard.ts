@@ -8,7 +8,7 @@ export class JwtRefreshAuthGuard extends AuthGuard('jwt-refresh') {
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      this.logger.error('Login error:', {
+      this.logger.error('JWT-Refresh error:', {
         error: err?.message || info?.message,
         stack: err?.stack || info?.stack,
       });

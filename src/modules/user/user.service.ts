@@ -22,6 +22,7 @@ export class UserService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    console.log('User module initialized');
     await this.userModel.seedAdminUser();
   }
 
