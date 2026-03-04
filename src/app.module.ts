@@ -20,9 +20,11 @@ import { TicketModule } from './modules/ticket/ticket.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { CacheService } from './modules/cache/cache.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     CacheModule,
     ConfigModule.forRoot({
       validate,
