@@ -27,6 +27,11 @@ export class CommentService {
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
   ) {}
 
+  async onModuleInit() {
+    console.log('Comment Module initialized');
+    // Simulate async initialization logic
+  }
+
   async createComment(commentData, res) {
     try {
       const comment = await this.commentModel.create(commentData);

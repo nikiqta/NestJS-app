@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { levelToNestLevels } from './common/log/log-levels';
 import cookieParser from 'cookie-parser';
+import { Environment } from './config/validation.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,8 +16,27 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || ['http://localhost:3000'], // Allow only this origin
+    origin:
+      process.env.APP_ENV === Environment.Dev
+        ? 'http://192.168.214.147:8081'
+        : process.env.CORS_ORIGIN || ['http://localhost:3000'], // Allow only this origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
     credentials: true, // Allow cookies to be sent
+    allowedHeaders: 'Content-Type, Cookie', // Allowed headers
+  });
+
+  app.use((req, res, next) => {
+    res.setHeader(
+      'Strict-Transport-Security',
+      'max-age=604800; includeSubDomains',
+    );
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', 1);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+    res.setHeader('Content-Security-Policy', "default-src 'self'");
+    res.setHeader('Access-Control-Allow-Origin', 'http://192.168.214.147:8081');
+    next();
   });
 
   app.useGlobalPipes(
@@ -42,6 +62,7 @@ async function bootstrap() {
   app.useLogger(levelToNestLevels[logLevel.level] ?? ['log', 'warn', 'error']);
 
   app.use(cookieParser());
+
   await app.listen(configService.get('port', 3000));
   console.log(`Application is running on port: ${configService.get('port')}`);
 }

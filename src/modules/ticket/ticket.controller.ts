@@ -14,7 +14,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from 'src/schemas/user.schema';
 import { Ticket } from 'src/schemas/ticket.schema';
 
-@Controller('ticket')
+@Controller('api/ticket')
 export class TicketController {
   constructor(private ticketService: TicketService) {}
 

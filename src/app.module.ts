@@ -18,9 +18,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EventsModule } from './modules/events/events.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { CacheModule } from './modules/cache/cache.module';
+import { CacheService } from './modules/cache/cache.service';
 
 @Module({
   imports: [
+    CacheModule,
     ConfigModule.forRoot({
       validate,
       envFilePath: ['.env', `.env.${process.env.APP_ENV ?? Environment.Dev}`],
@@ -44,6 +47,7 @@ import { CommentModule } from './modules/comment/comment.module';
     EventsModule,
     TicketModule,
     CommentModule,
+    CacheModule,
   ],
   providers: [
     {
@@ -54,6 +58,7 @@ import { CommentModule } from './modules/comment/comment.module';
       provide: APP_FILTER,
       useClass: ApiErrorFilter,
     },
+    CacheService,
   ],
 })
 export class AppModule {

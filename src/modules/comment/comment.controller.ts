@@ -8,13 +8,15 @@ import {
   Put,
   Req,
   Res,
+  Sse,
   UseGuards,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateCommentDto, EditCommentDto } from './dto/create-comment-dto';
+import { Observable } from 'rxjs';
 
-@Controller('comment')
+@Controller('api/comment')
 export class CommentController {
   constructor(private ticketService: CommentService) {}
 
@@ -36,13 +38,13 @@ export class CommentController {
     return await this.ticketService.removeComment(commentId);
   }
 
-  @Get(':eventId')
+  @Sse('stream/:eventId')
   @UseGuards(JwtAuthGuard)
   async getCommentsStream(
     @Param('eventId') eventId: string,
     @Req() req,
     @Res() res,
-  ) {
+  ): Promise<Observable<MessageEvent>> {
     return await this.getCommentsStream(eventId, req, res);
   }
 

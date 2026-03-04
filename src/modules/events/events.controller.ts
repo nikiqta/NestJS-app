@@ -20,7 +20,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from 'src/schemas/user.schema';
 
-@Controller('events')
+@Controller('api/events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
