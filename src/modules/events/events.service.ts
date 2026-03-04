@@ -12,6 +12,7 @@ import { createFile, deleteFile, readFile } from 'src/helpers';
 import { Comment } from 'src/schemas/comment.schema';
 import { Event } from 'src/schemas/event.schema';
 import { Ticket } from 'src/schemas/ticket.schema';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class EventsService implements OnModuleInit {
@@ -21,6 +22,7 @@ export class EventsService implements OnModuleInit {
     @InjectModel(Event.name) private eventModel: Model<Event>,
     @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
+    private cacheService: CacheService,
   ) {}
 
   async onModuleInit() {
@@ -52,6 +54,10 @@ export class EventsService implements OnModuleInit {
       await createFile(file.path, completeFilePath);
       newEvent.imageUrl = fileName;
       newEvent.save();
+
+      // Invalidate cache
+      await this.cacheService.deletePattern('cache:events:*');
+      await this.cacheService.deletePattern('cache:events:unapproved:*');
 
       return {
         message: 'Event created successfully!',
@@ -108,6 +114,12 @@ export class EventsService implements OnModuleInit {
         updatedEvent.imageUrl = fileName;
         updatedEvent.save();
       }
+
+      // Invalidate cache
+      await this.cacheService.deletePattern('cache:events:*');
+      await this.cacheService.deletePattern('cache:events:unapproved:*');
+      await this.cacheService.deletePattern(`cache:events:${eventId}:*`);
+      await this.cacheService.deletePattern('cache:user:*:events:userEvents:*');
 
       return {
         message: 'Event updated successfully!',
@@ -181,6 +193,11 @@ export class EventsService implements OnModuleInit {
       await deleteFile(completeFilePath);
       await this.commentModel.findOneAndDelete({ relatedEvent: id });
       await this.ticketModel.findOneAndDelete({ relatedEvent: id });
+
+      // Invalidate cache
+      await this.cacheService.deletePattern('cache:events:*');
+      await this.cacheService.deletePattern('cache:ticket:*');
+      await this.cacheService.deletePattern('cache:comment:*');
 
       return {
         message: 'Event deleted successfully!',
@@ -287,6 +304,10 @@ export class EventsService implements OnModuleInit {
       await this.eventModel.findByIdAndUpdate(eventId, {
         status: 'Approved',
       });
+
+      // Invalidate cache
+      await this.cacheService.deletePattern('cache:events:*');
+      await this.cacheService.deletePattern('cache:events:unapproved:*');
     } catch (error) {
       this.logger.error('Failed to approve event:', {
         error: error.message,

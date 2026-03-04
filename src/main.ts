@@ -18,7 +18,7 @@ async function bootstrap() {
   app.enableCors({
     origin:
       process.env.APP_ENV === Environment.Dev
-        ? 'http://192.168.214.147:8081'
+        ? 'http://192.168.1.13:8081'
         : process.env.CORS_ORIGIN || ['http://localhost:3000'], // Allow only this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
     credentials: true, // Allow cookies to be sent
@@ -35,7 +35,7 @@ async function bootstrap() {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
     res.setHeader('Content-Security-Policy', "default-src 'self'");
-    res.setHeader('Access-Control-Allow-Origin', 'http://192.168.214.147:8081');
+    res.setHeader('Access-Control-Allow-Origin', 'http://192.168.1.13:8081');
     next();
   });
 

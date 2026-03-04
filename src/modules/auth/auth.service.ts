@@ -292,7 +292,9 @@ export class AuthService {
   }
 
   async session(userId, req, res) {
-    const accessToken = req.cookies?.Authentication;
+    const bearerToken = req.headers.authorization;
+    const accessToken = bearerToken?.slice(7).trim();
+
     try {
       if (!accessToken) {
         throw new UnauthorizedException();

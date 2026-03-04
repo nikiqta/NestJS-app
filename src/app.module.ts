@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerMiddleware } from './common/logging/logger.middleware';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
+import { HttpCacheInterceptor } from './common/cache/http-cache.interceptor';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestIdMiddleware } from './common/logging/request-id.middleware';
 import { ApiErrorFilter } from './common/errors/api-exception.filter';
@@ -55,6 +56,10 @@ import { ScheduleModule } from '@nestjs/schedule';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpCacheInterceptor,
     },
     {
       provide: APP_FILTER,

@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from 'src/schemas/user.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CacheConfig } from '../../common/cache/cache-config.decorator';
 
 @Controller('api/events')
 export class EventsController {
@@ -56,18 +57,21 @@ export class EventsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @CacheConfig({ ttl: '1h' })
   async findAll(): Promise<Event[]> {
     return await this.eventsService.findAll();
   }
 
   @Get('unapproved')
   @UseGuards(JwtAuthGuard)
+  @CacheConfig({ ttl: '30m' })
   async findAllUnapprovedEvents(): Promise<Event[]> {
     return await this.eventsService.findAllUnapprovedEvents();
   }
 
   @Get('userEvents')
   @UseGuards(JwtAuthGuard)
+  @CacheConfig({ ttl: '1h', userSpecific: true })
   async findUserEvents(
     @CurrentUser() body: { user: User; userId: string },
   ): Promise<Event[]> {
@@ -76,6 +80,7 @@ export class EventsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @CacheConfig({ ttl: '2h' })
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return await this.eventsService.getEventById(id);
   }

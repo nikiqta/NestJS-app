@@ -5,9 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Event, EventSchema } from 'src/schemas/event.schema';
 import { Comment, CommentSchema } from 'src/schemas/comment.schema';
 import { Ticket, TicketSchema } from 'src/schemas/ticket.schema';
+import { CacheModule } from '../cache/cache.module';
 
 @Module({
   imports: [
+    CacheModule,
     MongooseModule.forFeature([
       { name: Event.name, schema: EventSchema },
       { name: Comment.name, schema: CommentSchema },
