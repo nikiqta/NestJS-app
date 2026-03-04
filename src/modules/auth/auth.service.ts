@@ -158,7 +158,7 @@ export class AuthService {
             Date.now() + refreshExpirationM * 60000,
           );
 
-          const tokenPayload = { userId: user._id };
+          const tokenPayload = { sub: user._id };
           const access_token = this.jwtService.sign(tokenPayload, {
             secret: this.configService.getOrThrow<string>(
               'jwt.accessTokenSecret',

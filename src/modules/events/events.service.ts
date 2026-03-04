@@ -31,7 +31,7 @@ export class EventsService implements OnModuleInit {
   async createEvent(userId, req) {
     try {
       const eventObj = req.body;
-      const [file] = req.files;
+      const file = req.file;
 
       const newEvent = await this.eventModel.create({
         ...eventObj,

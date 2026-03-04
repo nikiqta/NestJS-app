@@ -22,7 +22,7 @@ async function bootstrap() {
         : process.env.CORS_ORIGIN || ['http://localhost:3000'], // Allow only this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
     credentials: true, // Allow cookies to be sent
-    allowedHeaders: 'Content-Type, Cookie', // Allowed headers
+    allowedHeaders: 'Content-Type, Authorization', // Allowed headers
   });
 
   app.use((req, res, next) => {

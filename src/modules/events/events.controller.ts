@@ -11,6 +11,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -19,6 +20,7 @@ import { Event } from 'src/schemas/event.schema';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from 'src/schemas/user.schema';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/events')
 export class EventsController {
@@ -26,10 +28,12 @@ export class EventsController {
 
   @Post('create')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('imgCollection'))
   async createEvent(
-    @Body() createEventDto: CreateEventDto,
+    // @Body() createEventDto: CreateEventDto,
     @CurrentUser() body: { user: User; userId: string },
-    @Req() req,
+    @Req()
+    req,
   ) {
     return await this.eventsService.createEvent(body.userId, req);
   }
@@ -62,12 +66,12 @@ export class EventsController {
     return await this.eventsService.findAllUnapprovedEvents();
   }
 
-  @Get('user/:id')
+  @Get('userEvents')
   @UseGuards(JwtAuthGuard)
   async findUserEvents(
-    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() body: { user: User; userId: string },
   ): Promise<Event[]> {
-    return await this.eventsService.findUserEvents(id);
+    return await this.eventsService.findUserEvents(body.userId);
   }
 
   @Get(':id')

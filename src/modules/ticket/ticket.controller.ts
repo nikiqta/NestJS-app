@@ -32,7 +32,7 @@ export class TicketController {
     return await this.ticketService.fetchEventTickets(eventId);
   }
 
-  @Get('userTickets/:userId')
+  @Get('userTickets')
   @UseGuards(JwtAuthGuard)
   async fetchUserTickets(
     @CurrentUser() body: { user: User; userId: string },

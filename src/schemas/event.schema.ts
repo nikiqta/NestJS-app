@@ -34,7 +34,7 @@ export class Event {
   @Prop([{ type: MongooseSchema.Types.String }])
   reservedSeats;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId })
+  @Prop({ type: MongooseSchema.Types.String })
   description;
 
   @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'User' }])
