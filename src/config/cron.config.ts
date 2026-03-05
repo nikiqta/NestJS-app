@@ -5,26 +5,22 @@ import { Environment } from './validation.config';
 const byEnv: Record<Environment, { jobs: Record<string, string> }> = {
   dev: {
     jobs: {
-      sayHallo: '*/30 * * * * *', // every 30 seconds (dev)
-      sayGoodBuy: '0 */5 * * * *', // every 5 minutes
+      sessionsCheck: '*/30 * * * * *', // every 30 seconds (dev)
     },
   },
   test: {
     jobs: {
-      sayHallo: '*/5 * * * *', // every 5 minutes
-      sayGoodBuy: '0 */30 * * * *', // every 30 minutes
+      sessionsCheck: '*/5 * * * *', // every 5 minutes
     },
   },
   uat: {
     jobs: {
-      sayHallo: '*/10 * * * *',
-      sayGoodBuy: '0 0 * * * *', // hourly
+      sessionsCheck: '*/10 * * * *', // every 10 minutes
     },
   },
   prod: {
     jobs: {
-      sayHallo: '0 */15 * * * *', // every 15 minutes
-      sayGoodBuy: '0 0 3 * * *', // daily at 03:00
+      sessionsCheck: '0 */15 * * * *', // every 15 minutes
     },
   },
 };

@@ -47,6 +47,7 @@ export class EventsService implements OnModuleInit {
         __dirname,
         '..',
         '..',
+        '..',
         'data',
         'events',
         fileName,

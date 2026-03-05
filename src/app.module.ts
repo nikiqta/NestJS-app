@@ -22,9 +22,16 @@ import { CommentModule } from './modules/comment/comment.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { CacheService } from './modules/cache/cache.service';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async () => ({
+        dest: '../uploads',
+      }),
+    }),
     ScheduleModule.forRoot(),
     CacheModule,
     ConfigModule.forRoot({

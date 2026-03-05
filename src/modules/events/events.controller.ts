@@ -10,10 +10,10 @@ import {
   Put,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventsService } from './events.service';
 import { Event } from 'src/schemas/event.schema';
@@ -31,10 +31,9 @@ export class EventsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('imgCollection'))
   async createEvent(
-    // @Body() createEventDto: CreateEventDto,
     @CurrentUser() body: { user: User; userId: string },
-    @Req()
-    req,
+    @Req() req,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.eventsService.createEvent(body.userId, req);
   }
