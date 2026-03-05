@@ -44,6 +44,15 @@ export function createFile(source: string, target: string): Promise<void> {
   });
 }
 
+/** Creates a file from a buffer */
+export async function createFileFromBuffer(buffer: Buffer, target: string): Promise<void> {
+  try {
+    await fsp.writeFile(target, buffer);
+  } catch (err) {
+    throw sanitizeFsError(err);
+  }
+}
+
 /** Deletes a file */
 export async function deleteFile(path: string): Promise<void> {
   try {

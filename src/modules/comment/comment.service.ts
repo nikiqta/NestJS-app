@@ -21,16 +21,11 @@ function sendEventsToAll(newData, eventId) {
 
 @Injectable()
 export class CommentService {
-  private readonly logger = new Logger(EventsService.name);
+  private readonly logger = new Logger(CommentService.name);
   constructor(
     @InjectModel(Event.name) private eventModel: Model<Event>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
   ) {}
-
-  async onModuleInit() {
-    console.log('Comment Module initialized');
-    // Simulate async initialization logic
-  }
 
   async createComment(commentData, res) {
     try {
@@ -115,7 +110,7 @@ export class CommentService {
       clients[eventId].push(newClient);
 
       req.on('close', () => {
-        console.log(`${clientId} Connection closed`);
+        this.logger.log(`${clientId} Connection closed`);
         Object.keys(clients).forEach((client) => {
           clients[client] = clients[client].filter((c) => c.id !== clientId);
         });

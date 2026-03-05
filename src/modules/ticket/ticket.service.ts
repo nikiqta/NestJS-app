@@ -19,11 +19,6 @@ export class TicketService {
     @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
   ) {}
 
-  async onModuleInit() {
-    console.log('Ticket Module initialized');
-    // Simulate async initialization logic
-  }
-
   async createTicket(req) {
     try {
       const ticketObj = req.body;

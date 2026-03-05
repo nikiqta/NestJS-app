@@ -13,18 +13,13 @@ import * as userSchema from 'src/schemas/user.schema';
 import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit {
+export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   constructor(
     @InjectModel(userSchema.User.name)
     private readonly userModel: userSchema.UserModel,
   ) {}
-
-  async onModuleInit() {
-    console.log('User module initialized');
-    await this.userModel.seedAdminUser();
-  }
 
   async register(user: RegisterUserDto) {
     try {

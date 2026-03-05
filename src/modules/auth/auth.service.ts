@@ -20,11 +20,6 @@ export class AuthService {
     @InjectModel(Session.name) private sessionModel: Model<Session>,
   ) {}
 
-  async onModuleInit() {
-    console.log('Auth Module initialized');
-    // Simulate async initialization logic
-  }
-
   async login(user, req, res) {
     try {
       const cookies = getCookies(req);

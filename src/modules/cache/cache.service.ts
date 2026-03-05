@@ -1,20 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cacheable } from 'cacheable';
 
 @Injectable()
 export class CacheService {
-  constructor(@Inject('CACHE_INSTANCE') private readonly cache: Cacheable) {}
+  private readonly logger = new Logger(CacheService.name);
 
-  async onModuleInit() {
-    console.log('Redis initialized');
-    // Simulate async initialization logic
-  }
+  constructor(@Inject('CACHE_INSTANCE') private readonly cache: Cacheable) {}
 
   async get(key: string): Promise<any> {
     try {
       // Add short timeout to prevent hanging (1 second)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Cache get timeout')), 1000)
+        setTimeout(() => reject(new Error('Cache get timeout')), 1000),
       );
 
       const cachePromise = this.cache.get(key);
@@ -32,7 +29,7 @@ export class CacheService {
     try {
       // Add short timeout (1 second)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Cache set timeout')), 1000)
+        setTimeout(() => reject(new Error('Cache set timeout')), 1000),
       );
 
       const cachePromise = this.cache.set(key, value, ttl);
@@ -60,6 +57,16 @@ export class CacheService {
       // Access the Redis client from Keyv
       const redis = store.opts.store as any;
 
+      // Check if scan method exists
+      if (!redis.scan || typeof redis.scan !== 'function') {
+        console.warn(
+          `Redis client does not support scan operation for pattern: ${pattern}. Using clear() as fallback.`,
+        );
+        // Fallback: just skip pattern deletion
+        // You could also call this.cache.clear() to clear everything, but that's too aggressive
+        return;
+      }
+
       // Use Redis SCAN to find keys matching pattern
       const namespace = store.opts.namespace || 'keyv';
       const fullPattern = `${namespace}:${pattern}`;
@@ -68,18 +75,35 @@ export class CacheService {
       let keysToDelete: string[] = [];
 
       do {
-        const result = await redis.scan(
-          cursor,
-          'MATCH',
-          fullPattern,
-          'COUNT',
-          100,
-        );
-        cursor = result[0];
-        const keys = result[1];
+        // Handle both ioredis and node-redis scan signatures
+        let result: any;
+        try {
+          // Try ioredis style (returns array)
+          result = await redis.scan(cursor, 'MATCH', fullPattern, 'COUNT', 100);
+        } catch (err) {
+          // Try node-redis v4 style (different signature)
+          result = await redis.scan(cursor, {
+            MATCH: fullPattern,
+            COUNT: 100,
+          });
+        }
 
-        if (keys.length > 0) {
-          keysToDelete = keysToDelete.concat(keys);
+        // Handle different response formats
+        if (Array.isArray(result)) {
+          cursor = result[0];
+          const keys = result[1] || [];
+          if (keys.length > 0) {
+            keysToDelete = keysToDelete.concat(keys);
+          }
+        } else if (result && result.cursor !== undefined) {
+          // node-redis v4 format
+          cursor = result.cursor.toString();
+          const keys = result.keys || [];
+          if (keys.length > 0) {
+            keysToDelete = keysToDelete.concat(keys);
+          }
+        } else {
+          break;
         }
       } while (cursor !== '0');
 
@@ -94,12 +118,12 @@ export class CacheService {
           keysWithoutNamespace.map((key) => this.cache.delete(key)),
         );
 
-        console.log(
+        this.logger.log(
           `Deleted ${keysToDelete.length} keys matching pattern: ${pattern}`,
         );
       }
     } catch (error) {
-      console.error(`Error deleting pattern ${pattern}:`, error);
+      this.logger.error(`Error deleting pattern ${pattern}:`, error);
       // Don't throw - cache failures shouldn't break the application
     }
   }
@@ -107,7 +131,7 @@ export class CacheService {
   async clear(): Promise<void> {
     try {
       await this.cache.clear();
-      console.log('Cache cleared successfully');
+      this.logger.log('Cache cleared successfully');
     } catch (error) {
       console.error('Error clearing cache:', error);
       // Don't throw - cache failures shouldn't break the application

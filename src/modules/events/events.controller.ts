@@ -3,14 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   Param,
   ParseUUIDPipe,
   Post,
   Put,
   Req,
   Res,
-  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -33,7 +31,6 @@ export class EventsController {
   async createEvent(
     @CurrentUser() body: { user: User; userId: string },
     @Req() req,
-    @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.eventsService.createEvent(body.userId, req);
   }
@@ -80,7 +77,7 @@ export class EventsController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @CacheConfig({ ttl: '2h' })
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+  async findOne(@Param('id') id: string) {
     return await this.eventsService.getEventById(id);
   }
 

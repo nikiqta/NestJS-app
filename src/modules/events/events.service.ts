@@ -15,7 +15,7 @@ import { Ticket } from 'src/schemas/ticket.schema';
 import { CacheService } from '../cache/cache.service';
 
 @Injectable()
-export class EventsService implements OnModuleInit {
+export class EventsService {
   private readonly logger = new Logger(EventsService.name);
 
   constructor(
@@ -25,15 +25,10 @@ export class EventsService implements OnModuleInit {
     private cacheService: CacheService,
   ) {}
 
-  async onModuleInit() {
-    console.log('Event Module initialized');
-    // Simulate async initialization logic
-  }
-
   async createEvent(userId, req) {
+    const file = req.file;
     try {
       const eventObj = req.body;
-      const file = req.file;
 
       const newEvent = await this.eventModel.create({
         ...eventObj,
@@ -52,9 +47,15 @@ export class EventsService implements OnModuleInit {
         'events',
         fileName,
       );
+
+      // Copy file from temp location to final destination
       await createFile(file.path, completeFilePath);
+
+      // Delete temporary file after successful copy
+      await deleteFile(file.path);
+
       newEvent.imageUrl = fileName;
-      newEvent.save();
+      await newEvent.save();
 
       // Invalidate cache
       await this.cacheService.deletePattern('cache:events:*');
@@ -64,6 +65,18 @@ export class EventsService implements OnModuleInit {
         message: 'Event created successfully!',
       };
     } catch (error) {
+      // Clean up temporary file on error
+      if (file?.path) {
+        try {
+          await deleteFile(file.path);
+        } catch (cleanupError) {
+          this.logger.warn('Failed to delete temporary file:', {
+            path: file.path,
+            error: cleanupError.message,
+          });
+        }
+      }
+
       this.logger.error('Failed to create event:', {
         error: error.message,
         userId,
@@ -74,9 +87,9 @@ export class EventsService implements OnModuleInit {
   }
 
   async editEvent(eventId, req) {
+    const [file] = req.files || [];
     try {
       const data = req.body;
-      const [file] = req.files;
 
       if (data?.imageUrl) {
         const event = await this.eventModel.findById(eventId);
@@ -85,6 +98,7 @@ export class EventsService implements OnModuleInit {
         }
         const completeFilePath = path.resolve(
           __dirname,
+          '..',
           '..',
           '..',
           'data',
@@ -100,20 +114,27 @@ export class EventsService implements OnModuleInit {
         status: 'Approved', // -> This must be romoved as it is temporary work around
       });
 
-      if (data?.imageUrl && updatedEvent) {
+      if (data?.imageUrl && updatedEvent && file) {
         const fileExtension = file.originalname.split('.').reverse()[0];
         const fileName = `${updatedEvent._id}.${fileExtension}`;
         const completeFilePath = path.resolve(
           __dirname,
           '..',
           '..',
+          '..',
           'data',
           'events',
           fileName,
         );
+
+        // Copy file from temp location to final destination
         await createFile(file.path, completeFilePath);
+
+        // Delete temporary file after successful copy
+        await deleteFile(file.path);
+
         updatedEvent.imageUrl = fileName;
-        updatedEvent.save();
+        await updatedEvent.save();
       }
 
       // Invalidate cache
@@ -126,6 +147,18 @@ export class EventsService implements OnModuleInit {
         message: 'Event updated successfully!',
       };
     } catch (error) {
+      // Clean up temporary file on error
+      if (file?.path) {
+        try {
+          await deleteFile(file.path);
+        } catch (cleanupError) {
+          this.logger.warn('Failed to delete temporary file:', {
+            path: file.path,
+            error: cleanupError.message,
+          });
+        }
+      }
+
       this.logger.error('Failed to edit event:', {
         error: error.message,
         eventId,
@@ -150,7 +183,15 @@ export class EventsService implements OnModuleInit {
 
       const fileExtension = event.imageUrl.split('.').reverse()[0];
       const readStream = await readFile(
-        path.join(__dirname, '..', '..', 'data', 'events', event.imageUrl),
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'data',
+          'events',
+          event.imageUrl,
+        ),
       );
       event.imageUrl = `data:${
         fileExtension === 'svg' ? 'image/svg+xml' : 'image/png'
@@ -184,6 +225,7 @@ export class EventsService implements OnModuleInit {
 
       const completeFilePath = path.resolve(
         __dirname,
+        '..',
         '..',
         '..',
         'data',
@@ -228,7 +270,15 @@ export class EventsService implements OnModuleInit {
       for (const [index, event] of events.entries()) {
         const fileExtension = event.imageUrl.split('.').reverse()[0];
         const readStream = await readFile(
-          path.join(__dirname, '..', '..', 'data', 'events', event.imageUrl),
+          path.join(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            'data',
+            'events',
+            event.imageUrl,
+          ),
         );
         events[index].imageUrl = `data:${
           fileExtension === 'svg' ? 'image/svg+xml' : 'image/png'
@@ -256,7 +306,15 @@ export class EventsService implements OnModuleInit {
       for (const [index, event] of events.entries()) {
         const fileExtension = event.imageUrl.split('.').reverse()[0];
         const readStream = await readFile(
-          path.join(__dirname, '..', '..', 'data', 'events', event.imageUrl),
+          path.join(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            'data',
+            'events',
+            event.imageUrl,
+          ),
         );
         events[index].imageUrl = `data:${
           fileExtension === 'svg' ? 'image/svg+xml' : 'image/png'
@@ -281,7 +339,15 @@ export class EventsService implements OnModuleInit {
       for (const [index, event] of events.entries()) {
         const fileExtension = event.imageUrl.split('.').reverse()[0];
         const readStream = await readFile(
-          path.join(__dirname, '..', '..', 'data', 'events', event.imageUrl),
+          path.join(
+            __dirname,
+            '..',
+            '..',
+            '..',
+            'data',
+            'events',
+            event.imageUrl,
+          ),
         );
         events[index].imageUrl = `data:${
           fileExtension === 'svg' ? 'image/svg+xml' : 'image/png'

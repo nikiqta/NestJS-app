@@ -23,6 +23,7 @@ import { CacheModule } from './modules/cache/cache.module';
 import { CacheService } from './modules/cache/cache.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MulterModule } from '@nestjs/platform-express';
+import { ScheduleModule as SchedulingModule } from './modules/schedule/schedule.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { MulterModule } from '@nestjs/platform-express';
     TicketModule,
     CommentModule,
     CacheModule,
+    SchedulingModule,
   ],
   providers: [
     {
