@@ -1,5 +1,13 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsNumber, Max, Min, validateSync } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+  validateSync,
+} from 'class-validator';
 
 export enum Environment {
   Dev = 'dev',
@@ -16,6 +24,26 @@ class EnvironmentVariables {
   @Min(0)
   @Max(65535)
   PORT: number;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_ACCESS_TOKEN_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_REFRESH_TOKEN_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MONGO_DB_URI: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MONGO_DB_USERNAME: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MONGO_DB_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {

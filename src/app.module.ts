@@ -11,7 +11,6 @@ import { ApiErrorFilter } from './common/errors/api-exception.filter';
 import configuration from './config/configuration';
 import cronConfig from './config/cron.config';
 import logLevelConfig from './config/log-level.config';
-import mongoDbConfig from './config/mongodb.config';
 import { Environment, validate } from './config/validation.config';
 import { MongodbConfigService } from './database/mongodb.config.service';
 import sessionConfig from './config/jwt.config';
@@ -42,7 +41,6 @@ import { ScheduleModule as SchedulingModule } from './modules/schedule/schedule.
         configuration,
         cronConfig,
         logLevelConfig,
-        mongoDbConfig,
         sessionConfig,
       ],
       isGlobal: true,
